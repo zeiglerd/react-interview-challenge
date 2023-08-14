@@ -1,0 +1,22 @@
+version: "1"
+services:
+#   front_end:
+#     container_name: front_end
+#     build: ./front-end/Dockerfile
+#     env_file:
+#       - .env
+#     ports:
+#       - "8080:8080"
+#     volumes:
+#       - ./front-end
+    # command: npm start
+  back_end:
+    container_name: back_end
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    # command: npm start

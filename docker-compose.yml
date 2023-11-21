@@ -2,9 +2,7 @@ version: "1"
 services:
   front_end:
     container_name: front_end
-    build: 
-      context: ./frontend
-      dockerfile: ./frontend
+    build: ./frontend
     env_file:
       - .env
     ports:
@@ -20,9 +18,7 @@ services:
     command: npm start
   db:
     container_name: challenge_db
-    build:
-      context: ./postgres
-      dockerfile: ./postgres/Dockerfile
+    build: ./postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}

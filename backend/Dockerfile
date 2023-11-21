@@ -10,9 +10,6 @@ COPY ./package*.json .
 # install dependencies
 RUN npm install
 
-#build typescript into javascript
-RUN npm run build
-
 # bundle app source
 COPY . .
 

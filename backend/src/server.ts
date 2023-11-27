@@ -5,6 +5,7 @@ import { routes } from './routes';
 dotenv.config();
 const app = express();
 
+app.use(express.json());
 app.use('/', routes);
 
 const port: number = parseInt(process.env.SERVER_PORT || '3000');

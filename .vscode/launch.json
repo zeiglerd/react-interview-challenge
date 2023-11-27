@@ -1,0 +1,30 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Backend Program",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/backend/src/server.ts",
+      "preLaunchTask": "tsc: build - backend/tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/backend/build/**/*.js"
+      ],
+      "env": {
+        "SERVER_PORT": "8000",
+        "SERVER_HOST": "0.0.0.0",
+        "PGUSER": "user",
+        "PGPASSWORD": "password",
+        "PGDATABASE": "challenge",
+        "PGPORT": "5432",
+        "PGHOST": "127.0.0.1"
+      }
+    }
+  ]
+}

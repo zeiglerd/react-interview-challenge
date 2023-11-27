@@ -1,28 +1,18 @@
 import { Client } from "pg";
 import { Todo } from "../models/Todo";
 
-class TodoController {
+export class TodoController {
 
   client: Client;
 
   constructor() {
     this.client = new Client();
+    this.client.connect();
   }
 
-  getAllTodos(): Todo[] {
-    return [
-      {
-        title: 'Todo 1',
-        completed: false,
-      },
-      {
-        title: 'Todo 2',
-        completed: false,
-      },
-      {
-        title: 'Todo 3',
-        completed: true
-      },
-    ]
+  async getAllTodos() {
+    const response = await this.client.query('SELECT * FROM todo');
+    console.log(response);
+    return response;
   }
 }

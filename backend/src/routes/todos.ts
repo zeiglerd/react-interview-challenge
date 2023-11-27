@@ -1,9 +1,18 @@
 import { Router } from 'express';
+import { TodoController } from '../controllers/TodoController';
+import { Todo } from '../models/Todo';
 
 export const todoRoutes = Router();
 
-todoRoutes.get('/todo', (request, response) => {
-  response.send('GET TODOS');
+todoRoutes.get('/todo', async (request, response, next) => {
+  try {
+    const controller = new TodoController();
+    const todos = await controller.getAllTodos();
+    response.send(todos);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
 });
 
 todoRoutes.post('/todo', (request, response) => {

@@ -12,7 +12,7 @@ services:
     container_name: back_end
     build: ./backend
     env_file:
-      - .env
+      - ./backend/.env
     ports:
       - "8000:8000"
     command: npm start

@@ -5,7 +5,7 @@ Hello! Welcome to the Advisor's Excel coding challenge. The goal of this exercis
 First, make sure you can run the codebase as it currently exists. 
 
 #### Prerequisites
-- Docker
+- [Docker](https://www.docker.com/products/docker-desktop/)
 - Node version 18
 
 Once you have both installed, you can run the database, front-end, and back-end however works best for you, though note that when we evaluate your work, we will simply pull down the project and run `docker compose up --build`, so make sure that works when sending your work in.

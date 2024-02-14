@@ -1,21 +1,5 @@
 version: "1"
 services:
-  front_end:
-    container_name: front_end
-    build: ./frontend
-    env_file:
-      - .env
-    ports:
-      - "3000:3000"
-    command: npm start
-  back_end:
-    container_name: back_end
-    build: ./backend
-    env_file:
-      - ./backend/.env
-    ports:
-      - "8000:8000"
-    command: npm start
   db:
     container_name: challenge_db
     build: ./postgres

@@ -1,17 +1,25 @@
 -- CREATE TABLE
-DROP TABLE IF EXISTS todo;
-CREATE TABLE todo (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR NOT NULL,
-    description VARCHAR,
-    completed BOOLEAN NOT NULL
+DROP TABLE IF EXISTS accounts;
+CREATE TABLE accounts (
+    account_number INTEGER PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    amount INTEGER NOT NULL,
+    type VARCHAR NOT NULL
 );
 
+ALTER TABLE accounts ADD CONSTRAINT verify_type
+CHECK (type IN ('checking', 'savings', 'credit'));
+
 -- LOAD DATAS
-INSERT INTO todo(title, completed)
+INSERT INTO accounts 
+    (account_number, name, amount, type)
 VALUES
-    ('Do Laundry', false),
-    ('Make Dinner', false),
-    ('Exercise', false),
-    ('Take out Trash', false),
-    ('Drive Bob to Airport', false);
+    (1, 'Johns Checking', 1000, 'checking'),
+    (2, 'Janes Savings', 2000, 'savings'),
+    (3, 'Jills Credit', -3000, 'credit'),
+    (4, 'Bobs Checking', 40000, 'checking'),
+    (5, 'Bills Savings', 50000, 'savings'),
+    (6, 'Bills Credit', -60000, 'credit'),
+    (7, 'Nancy Checking', 70000, 'checking'),
+    (8, 'Nancy Savings', 80000, 'savings'),
+    (9, 'Nancy Credit', -90000, 'credit');

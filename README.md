@@ -39,7 +39,7 @@ The customer should be output their balance when selecting this option.
 Once you have completed the project, we ask that you take some time to answer the questions in the included `wrap-up.md` file.
 
 ### Submitting the Project
-To submit the project, please compress everything into a .zip file and send it to michael.hartung@advisorsexcel.com with the title `Coding Challenge - {your name}`.
+Please create a public Github repo and use that while you work on this project. Once completed, send michael.hartung@advisorsexcel.com a link to the public repo, and our team will review.
 
 ### Evaluation Process
 When evaluating this project, we will first start up the database in a docker container and ensure we can connect to that database via the credentials in the .env file. 

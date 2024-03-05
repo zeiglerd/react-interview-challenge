@@ -20,7 +20,7 @@ VALUES
     (3, 'Jills Credit', -3000, 'credit', 10000),
     (4, 'Bobs Checking', 40000, 'checking'),
     (5, 'Bills Savings', 50000, 'savings'),
-    (6, 'Bills Credit', -60000, 'credit', 100000),
+    (6, 'Bills Credit', -60000, 'credit', 60000),
     (7, 'Nancy Checking', 70000, 'checking'),
     (8, 'Nancy Savings', 80000, 'savings'),
     (9, 'Nancy Credit', -90000, 'credit', 100000);

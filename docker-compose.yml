@@ -13,6 +13,10 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
+  api:
+    build: ./api
+    ports:
+      - "3000:3000"
 volumes:
     db:
       external: true

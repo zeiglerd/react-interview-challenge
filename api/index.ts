@@ -1,12 +1,13 @@
-import express, {Request, Response} from "express";
+import express from "express";
+import transactionsRouter from "./routes/transactions";
+import accountsRouter from "./routes/accounts";
 
 const app = express();
 const PORT = 3000;
 
-
-app.get("/", (request: Request, response: Response) => {
-  response.send("Hello World!");
-});
+// Setup Routes
+app.use("/transactions", transactionsRouter);
+app.use("/accounts", accountsRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

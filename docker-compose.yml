@@ -14,7 +14,11 @@ services:
       - "5432:5432"
     restart: unless-stopped
   api:
+    container_name: challenge_api
     build: ./api
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      PORT: ${PORT}
     ports:
       - "3000:3000"
 volumes:

@@ -5,4 +5,4 @@ RUN npm install
 COPY . .
 RUN npm run build
 EXPOSE 3000
-CMD ["node", "build/index.js"]
+CMD ["node", "--env-file=.env", "build/index.js"]

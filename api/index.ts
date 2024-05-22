@@ -3,7 +3,7 @@ import transactionsRouter from "./routes/transactions";
 import accountsRouter from "./routes/accounts";
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 // Setup Routes
 app.use("/transactions", transactionsRouter);

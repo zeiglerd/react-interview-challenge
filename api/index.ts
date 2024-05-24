@@ -7,6 +7,15 @@ const PORT = process.env.PORT;
 
 app.use(express.json());
 
+app.use(function (_, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
+  next()
+});
+
 // Setup Routes
 app.use("/transactions", transactionsRouter);
 app.use("/accounts", accountsRouter);

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import {account} from "../Types/Account"
 import Paper from "@mui/material/Paper/Paper";
 import { Button, Card, CardContent, Grid, TextField } from "@mui/material";
@@ -9,7 +9,19 @@ type AccountDashboardProps = {
 }
 
 export const AccountDashboard = (props: AccountDashboardProps) => {
+  const [depositAmount, setDepositAmount] = useState(0);
+  const [withdrawAmount, setWithdrawAmount] = useState(0);
+
   const {account, signOut} = props;
+
+  const depositFunds = async () => {
+  // TODO: Implement depositFunds
+  }
+
+  const withdrawFunds = async () => {
+    //TODO: Implement withdrawFunds
+  }
+
   return (
     <Paper className="account-dashboard">
       <div className="dashboard-header">
@@ -29,9 +41,19 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
                 sx={{
                   display: 'flex',
                   margin: 'auto',
-                }} 
+                }}
+                onChange={(e) => setDepositAmount(+e.target.value)}
               />
-              <Button variant="contained" sx={{display: 'flex', margin: 'auto', marginTop: 2}}>Submit</Button>
+              <Button 
+                variant="contained" 
+                sx={{
+                  display: 'flex', 
+                  margin: 'auto', 
+                  marginTop: 2}}
+                onClick={depositFunds}
+              >
+                Submit
+              </Button>
             </CardContent>
           </Card>
         </Grid>
@@ -47,8 +69,19 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
                   display: 'flex',
                   margin: 'auto',
                 }}
+                onChange={(e) => setWithdrawAmount(+e.target.value)}
               />
-              <Button variant="contained" sx={{display: 'flex', margin: 'auto', marginTop: 2}}>Submit</Button>
+              <Button 
+                variant="contained" 
+                sx={{
+                  display: 'flex', 
+                  margin: 'auto', 
+                  marginTop: 2
+                }}
+                onClick={withdrawFunds}
+                >
+                  Submit
+                </Button>
             </CardContent>
           </Card>
         </Grid>

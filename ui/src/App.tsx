@@ -2,14 +2,10 @@ import { useState } from 'react';
 import './App.css';
 import { Grid } from '@mui/material';
 import { SignIn } from './components/SignIn';
+import { AccountDashboard } from './components/AccountDashboard';
+import { account } from './Types/Account';
 
-type account = {
-  accountNumber: number;
-  name: string;
-  amount: number;
-  type: string;
-  creditLimit: number;
-}
+
 
 export const App = () => {
   const [accountNumberError, setAccountNumberError] = useState(false);
@@ -28,10 +24,13 @@ export const App = () => {
     setAccountNumberError(false);
     setAccount(await response.json());
   }
+  const signOut = async () => {
+    setAccount(undefined);
+  }
 
   const Page = () => {
     if(account) {
-      return <></>
+      return <AccountDashboard account={account} signOut={signOut}/>
     } else {
       return <SignIn 
         signIn={signIn}

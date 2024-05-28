@@ -1,6 +1,8 @@
 ## Questions
 
-### Please provide instructions on how to run your project in a bulleted list below.
+### Did you find any issues with the existing functionality of the project?
+
+### Would you modify the structure of this project if you were to start it over? If so, how?
 
 ### Were there any pieces of this project that you were not able to complete that you'd like to mention?
 

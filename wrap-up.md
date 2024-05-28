@@ -1,6 +1,8 @@
 ## Questions
 
-### Did you find any issues with the existing functionality of the project?
+### What issues, if any, did you find with the existing code?
+
+### What issues, if any, did you find with the request to add functionality?
 
 ### Would you modify the structure of this project if you were to start it over? If so, how?
 

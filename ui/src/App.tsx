@@ -22,7 +22,15 @@ export const App = () => {
     }
       
     setAccountNumberError(false);
-    setAccount(await response.json());
+    const data = await response.json();
+    console.log(data);
+    setAccount({
+      accountNumber: data.account_number,
+      name: data.name,
+      amount: data.amount,
+      type: data.type,
+      creditLimit: data.credit_limit
+    });
   }
   const signOut = async () => {
     setAccount(undefined);

@@ -11,15 +11,42 @@ type AccountDashboardProps = {
 export const AccountDashboard = (props: AccountDashboardProps) => {
   const [depositAmount, setDepositAmount] = useState(0);
   const [withdrawAmount, setWithdrawAmount] = useState(0);
+  const [account, setAccount] = useState(props.account); 
 
-  const {account, signOut} = props;
+  const {signOut} = props;
 
   const depositFunds = async () => {
-  // TODO: Implement depositFunds
+    const requestOptions = {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({amount: depositAmount})
+    }
+    const response = await fetch(`http://localhost:3000/transactions/${account.accountNumber}/deposit`, requestOptions);
+    const data = await response.json();
+    setAccount({
+      accountNumber: data.account_number,
+      name: data.name,
+      amount: data.amount,
+      type: data.type,
+      creditLimit: data.credit_limit
+    });
   }
 
   const withdrawFunds = async () => {
-    //TODO: Implement withdrawFunds
+    const requestOptions = {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({amount: withdrawAmount})
+    }
+    const response = await fetch(`http://localhost:3000/transactions/${account.accountNumber}/withdraw`, requestOptions);
+    const data = await response.json();
+    setAccount({
+      accountNumber: data.account_number,
+      name: data.name,
+      amount: data.amount,
+      type: data.type,
+      creditLimit: data.credit_limit
+    });
   }
 
   return (

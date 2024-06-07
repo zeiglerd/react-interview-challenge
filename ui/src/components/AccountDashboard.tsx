@@ -21,17 +21,17 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
     setDepositErrors([]);
     setWithdrawErrors([]);
     const errors = []
-    if (depositAmount > 1000) {
-      errors.push('Cannot deposit more than $1000 in a single transaction.');
+    if (depositAmount > Number(process.env.REACT_APP_DEPOSIT_MAX_TRANSACTION)) {
+      errors.push(`Cannot deposit more than $${process.env.REACT_APP_DEPOSIT_MAX_TRANSACTION} in a single transaction.`);
     }
     if (account.type === 'credit') {
       const newAmount = depositAmount + account.amount;
       if (newAmount > 0) {
-        errors.push('Cannot deposit more in your account than is needed to reach a $0 balance.');
+        errors.push('Cannot deposit more in your account than is needed to reach a zero balance.');
       }
     }
     if (errors.length) {
-      return setDepositErrors(depositErrors);
+      return setDepositErrors(errors);
     }
 
     const requestOptions = {
@@ -59,14 +59,14 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
     setDepositErrors([]);
     setWithdrawErrors([]);
     const errors = []
-    if (withdrawAmount > 200) {
-      errors.push('Can withdraw no more than $200 in a single transaction.');
+    if (withdrawAmount > Number(process.env.REACT_APP_WITHDRAW_MAX_TRANSACTION)) {
+      errors.push(`Can withdraw no more than $${process.env.REACT_APP_WITHDRAW_MAX_TRANSACTION} in a single transaction.`);
     }
-    // if (withdrawAmount > 400) { // @TODO
-    //   errors.push('Can withdraw no more than $400 in a single day.');
+    // if (withdrawAmount > process.env.REACT_APP_WITHDRAW_MAX_DAILY) { // @TODO
+    //   errors.push(`Can withdraw no more than $${process.env.REACT_APP_WITHDRAW_MAX_DAILY} in a single day.`);
     // }
-    if (withdrawAmount % 5 !== 0) {
-      errors.push('Can only withdraw an amount that can be dispensed in $5 bills.');
+    if (withdrawAmount % Number(process.env.REACT_APP_WITHDRAW_DIVISIBLE) !== 0) {
+      errors.push(`Can only withdraw an amount that can be dispensed in $${process.env.REACT_APP_WITHDRAW_DIVISIBLE} bills.`);
     }
     if (account.type === 'credit') {
       let availableCredit = account.creditLimit;
@@ -78,7 +78,7 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
       errors.push('Cannot withdraw more than you have in your account.');
     }
     if (errors.length) {
-      return setWithdrawErrors(withdrawErrors);
+      return setWithdrawErrors(errors);
     }
     
     const requestOptions = {

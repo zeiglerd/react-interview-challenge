@@ -4,14 +4,14 @@ import { getAccount } from "./accountHandler";
 export const withdrawal = async (accountID: string, amount: number) => {
   const account = await getAccount(accountID);
   
-  if (amount > 200) {
-    throw new Error('Can withdraw no more than $200 in a single transaction.');
+  if (amount > Number(process.env.WITHDRAW_MAX_TRANSACTION)) {
+    throw new Error(`Can withdraw no more than $${process.env.WITHDRAW_MAX_TRANSACTION} in a single transaction.`);
   }
-  // if (amount > 400) { // @TODO
-  //   throw new Error('Can withdraw no more than $400 in a single day.');
+  // if (amount > process.env.WITHDRAW_MAX_DAILY) { // @TODO
+  //   throw new Error(`Can withdraw no more than $${process.env.WITHDRAW_MAX_DAILY} in a single day.`);
   // }
-  if (amount % 5 !== 0) {
-    throw new Error('Can only withdraw an amount that can be dispensed in $5 bills.');
+  if (amount % Number(process.env.WITHDRAW_DIVISIBLE) !== 0) {
+    throw new Error(`Can only withdraw an amount that can be dispensed in $${process.env.WITHDRAW_DIVISIBLE} bills.`);
   }
   if (account.type === 'credit') {
     let availableCredit = account.creditLimit;
@@ -20,7 +20,7 @@ export const withdrawal = async (accountID: string, amount: number) => {
       throw new Error('Cannot withdraw more than your credit limit.');
     }
   } else if (amount > account.amount) {
-    throw new Error('Cannot withdraw more than you have in you account.');
+    throw new Error('Cannot withdraw more than you have in your account.');
   }
 
   account.amount -= amount;
@@ -41,13 +41,13 @@ export const withdrawal = async (accountID: string, amount: number) => {
 export const deposit = async (accountID: string, amount: number) => {
   const account = await getAccount(accountID);
 
-  if (amount > 1000) {
-    throw new Error('Cannot deposit more than $1000 in a single transaction.');
+  if (amount > Number(process.env.DEPOSIT_MAX_TRANSACTION)) {
+    throw new Error(`Cannot deposit more than $${process.env.DEPOSIT_MAX_TRANSACTION} in a single transaction.`);
   }
   if (account.type === 'credit') {
     const newAmount = amount + account.amount;
     if (newAmount > 0) {
-      throw new Error('Cannot deposit more in your account than is needed to reach a $0 balance.');
+      throw new Error('Cannot deposit more in your account than is needed to reach a zero balance.');
     }
   }
 

@@ -46,16 +46,24 @@ export const withdrawal = async (accountID: string, amount: number) => {
       WHERE account_number = $2`,
       [account.amount, accountID]
     );
+
+    const date = (new Date()).toISOString()
+      .split('T')
+      .join(' ')
+      .replace(/Z$/, '');
+
+    account.lastWithdraw = { amount, date };
     
     await client.query(`
       INSERT INTO transactions (
         account_number,
         amount,
-        type
+        type,
+        date
       ) VALUES (
-        $1, $2, 'withdraw'
+        $1, $2, 'withdraw', $3
       )`,
-      [accountID, amount]
+      [accountID, amount, date]
     );
   });
 

@@ -4,4 +4,8 @@ export type account = {
   amount: number;
   type: string;
   creditLimit: number;
+  lastWithdraw?: {
+    date: string;
+    amount: number;
+  };
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {account} from "../Types/Account"
 import Paper from "@mui/material/Paper/Paper";
 import { Button, Card, CardContent, Grid, TextField } from "@mui/material";
@@ -7,6 +7,27 @@ type AccountDashboardProps = {
   account: account;
   signOut: () => Promise<void>;
 }
+
+const updatePastWithdraws = (account: account) => {
+  const pastWithdraws = JSON.parse(localStorage.getItem('pastWithdraws') ?? '{}');
+  pastWithdraws[account.accountNumber] = pastWithdraws[account.accountNumber] ?? [];
+  pastWithdraws[account.accountNumber].push({ 
+    amount: account.lastWithdraw?.amount,
+    date: account.lastWithdraw?.date
+  });
+  localStorage.setItem('pastWithdraws', JSON.stringify(pastWithdraws));
+};
+
+const getPastWithdraws = (account: account) => JSON.parse(localStorage.getItem('pastWithdraws') ?? '{}')[account.accountNumber] ?? [];
+
+const getWithdrawnTodayTotal = (account: account) => {
+  const todaysWithdraws = getPastWithdraws(account).filter((pastWithdraw: typeof account.lastWithdraw) => {
+    const transactionDate = pastWithdraw && new Date(pastWithdraw.date);
+    return transactionDate && (new Date().getTime() - transactionDate.getTime()) < (24 * 60 * 60 * 1000);
+  });
+  return todaysWithdraws.reduce((accumulator: number, lastWithdraw: typeof account.lastWithdraw) => 
+    lastWithdraw ? accumulator + lastWithdraw.amount : 0, 0);
+};
 
 export const AccountDashboard = (props: AccountDashboardProps) => {
   const [depositAmount, setDepositAmount] = useState(0);
@@ -62,9 +83,10 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
     if (withdrawAmount > Number(process.env.REACT_APP_WITHDRAW_MAX_TRANSACTION)) {
       errors.push(`Can withdraw no more than $${process.env.REACT_APP_WITHDRAW_MAX_TRANSACTION} in a single transaction.`);
     }
-    // if (withdrawAmount > process.env.REACT_APP_WITHDRAW_MAX_DAILY) { // @TODO
-    //   errors.push(`Can withdraw no more than $${process.env.REACT_APP_WITHDRAW_MAX_DAILY} in a single day.`);
-    // }
+    const withdrawnTodayTotal = getWithdrawnTodayTotal(account)
+    if (withdrawnTodayTotal > Number(process.env.REACT_APP_WITHDRAW_MAX_DAILY)) {
+      errors.push(`Can withdraw no more than $${process.env.REACT_APP_WITHDRAW_MAX_DAILY} in a single day.`);
+    }
     if (withdrawAmount % Number(process.env.REACT_APP_WITHDRAW_DIVISIBLE) !== 0) {
       errors.push(`Can only withdraw an amount that can be dispensed in $${process.env.REACT_APP_WITHDRAW_DIVISIBLE} bills.`);
     }
@@ -98,9 +120,14 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
       name: data.name,
       amount: data.amount,
       type: data.type,
-      creditLimit: data.credit_limit
+      creditLimit: data.credit_limit,
+      lastWithdraw: data.lastWithdraw
     });
   }
+
+  useEffect(() => {
+    updatePastWithdraws(account);
+  }, [account]);
 
   return (
     <Paper className="account-dashboard">

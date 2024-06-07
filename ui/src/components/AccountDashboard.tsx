@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import {account} from "../Types/Account"
 import Paper from "@mui/material/Paper/Paper";
-import { Button, Card, CardContent, Grid, TextField } from "@mui/material";
+import { Button, Card, CardContent, Grid, List, ListItem, ListItemText, TextField } from "@mui/material";
 
 type AccountDashboardProps = {
   account: account;
@@ -141,7 +141,13 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
           <Card className="deposit-card">
             <CardContent>
               <h3>Deposit</h3>
-              {depositErrors ?? depositErrors}
+              { depositErrors && <List>
+                {depositErrors.map((error) => (
+                  <ListItem>
+                    <ListItemText primary={error} />
+                  </ListItem>
+                ))}
+              </List> }
               <TextField 
                 label="Deposit Amount" 
                 variant="outlined" 
@@ -169,7 +175,13 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
           <Card className="withdraw-card">
             <CardContent>
               <h3>Withdraw</h3>
-              {withdrawErrors ?? withdrawErrors}
+              { withdrawErrors && <List>
+                {withdrawErrors.map((error, i) => (
+                  <ListItem key={i}>
+                    <ListItemText primary={error} />
+                  </ListItem>
+                ))}
+              </List> }
               <TextField 
                 label="Withdraw Amount" 
                 variant="outlined" 

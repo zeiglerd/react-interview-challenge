@@ -1,4 +1,4 @@
-import { query } from "../utils/db";
+import { query, tQuery } from "../utils/db";
 import { getAccount } from "./accountHandler";
 
 export const withdrawal = async (accountID: string, amount: number) => {
@@ -7,9 +7,24 @@ export const withdrawal = async (accountID: string, amount: number) => {
   if (amount > Number(process.env.WITHDRAW_MAX_TRANSACTION)) {
     throw new Error(`Can withdraw no more than $${process.env.WITHDRAW_MAX_TRANSACTION} in a single transaction.`);
   }
-  // if (amount > process.env.WITHDRAW_MAX_DAILY) { // @TODO
-  //   throw new Error(`Can withdraw no more than $${process.env.WITHDRAW_MAX_DAILY} in a single day.`);
-  // }
+  const res = await query(`
+    SELECT amount, 
+           date 
+    FROM transactions
+    WHERE account_number = $1
+      AND date >= NOW() - INTERVAL '24 HOUR'
+    `, 
+    [accountID]
+  );
+  if (res && res.rows && res.rows.length) {
+    let withdrawnToday = 0
+    res.rows.forEach((field) => {
+      withdrawnToday += field.amount;
+    });
+    if (withdrawnToday + amount > Number(process.env.WITHDRAW_MAX_DAILY)) {
+      throw new Error(`Can withdraw no more than $${process.env.WITHDRAW_MAX_DAILY} in a single day.`);
+    }
+  }
   if (amount % Number(process.env.WITHDRAW_DIVISIBLE) !== 0) {
     throw new Error(`Can only withdraw an amount that can be dispensed in $${process.env.WITHDRAW_DIVISIBLE} bills.`);
   }
@@ -24,16 +39,25 @@ export const withdrawal = async (accountID: string, amount: number) => {
   }
 
   account.amount -= amount;
-  const res = await query(`
-    UPDATE accounts
-    SET amount = $1 
-    WHERE account_number = $2`,
-    [account.amount, accountID]
-  );
-
-  if (res.rowCount === 0) {
-    throw new Error("Transaction failed");
-  }
+  await tQuery(async (client) => {
+    await client.query(`
+      UPDATE accounts
+      SET amount = $1 
+      WHERE account_number = $2`,
+      [account.amount, accountID]
+    );
+    
+    await client.query(`
+      INSERT INTO transactions (
+        account_number,
+        amount,
+        type
+      ) VALUES (
+        $1, $2, 'withdraw'
+      )`,
+      [accountID, amount]
+    );
+  });
 
   return account;
 }
@@ -52,16 +76,25 @@ export const deposit = async (accountID: string, amount: number) => {
   }
 
   account.amount += amount;
-  const res = await query(`
-    UPDATE accounts
-    SET amount = $1 
-    WHERE account_number = $2`,
-    [account.amount, accountID]
-  );
-
-  if (res.rowCount === 0) {
-    throw new Error("Transaction failed");
-  }
+  await tQuery(async (client) => {
+    await client.query(`
+      UPDATE accounts
+      SET amount = $1 
+      WHERE account_number = $2`,
+      [account.amount, accountID]
+    );
+    
+    await client.query(`
+      INSERT INTO transactions (
+        account_number,
+        amount,
+        type
+      ) VALUES (
+        $1, $2, 'deposit'
+      )`,
+      [accountID, amount]
+    );
+  });
 
   return account;
 }

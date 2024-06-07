@@ -10,12 +10,30 @@ type AccountDashboardProps = {
 
 export const AccountDashboard = (props: AccountDashboardProps) => {
   const [depositAmount, setDepositAmount] = useState(0);
+  const [depositErrors, setDepositErrors] = useState<string[]>([]);
   const [withdrawAmount, setWithdrawAmount] = useState(0);
+  const [withdrawErrors, setWithdrawErrors] = useState<string[]>([]);
   const [account, setAccount] = useState(props.account); 
 
   const {signOut} = props;
 
   const depositFunds = async () => {
+    setDepositErrors([]);
+    setWithdrawErrors([]);
+    const errors = []
+    if (depositAmount > 1000) {
+      errors.push('Cannot deposit more than $1000 in a single transaction.');
+    }
+    if (account.type === 'credit') {
+      const newAmount = depositAmount + account.amount;
+      if (newAmount > 0) {
+        errors.push('Cannot deposit more in your account than is needed to reach a $0 balance.');
+      }
+    }
+    if (errors.length) {
+      return setDepositErrors(depositErrors);
+    }
+
     const requestOptions = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -33,6 +51,31 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
   }
 
   const withdrawFunds = async () => {
+    setDepositErrors([]);
+    setWithdrawErrors([]);
+    const errors = []
+    if (withdrawAmount > 200) {
+      errors.push('Can withdraw no more than $200 in a single transaction.');
+    }
+    // if (withdrawAmount > 400) { // @TODO
+    //   errors.push('Can withdraw no more than $400 in a single day.');
+    // }
+    if (withdrawAmount % 5 !== 0) {
+      errors.push('Can only withdraw an amount that can be dispensed in $5 bills.');
+    }
+    if (account.type === 'credit') {
+      let availableCredit = account.creditLimit;
+      availableCredit += account.amount;
+      if (withdrawAmount > availableCredit) {
+        errors.push('Cannot withdraw more than your credit limit.');
+      }
+    } else if (withdrawAmount > account.amount) {
+      errors.push('Cannot withdraw more than you have in your account.');
+    }
+    if (errors.length) {
+      return setWithdrawErrors(withdrawErrors);
+    }
+    
     const requestOptions = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -61,6 +104,7 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
           <Card className="deposit-card">
             <CardContent>
               <h3>Deposit</h3>
+              {depositErrors ?? depositErrors}
               <TextField 
                 label="Deposit Amount" 
                 variant="outlined" 
@@ -88,6 +132,7 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
           <Card className="withdraw-card">
             <CardContent>
               <h3>Withdraw</h3>
+              {withdrawErrors ?? withdrawErrors}
               <TextField 
                 label="Withdraw Amount" 
                 variant="outlined" 

@@ -4,15 +4,24 @@ import { deposit, withdrawal } from "../handlers/transactionHandler";
 
 const router = express.Router();
 
-const transactionSchema: Schema = Joi.object({
-  amount: Joi.number().required(),
+const withdrawSchema: Schema = Joi.object({
+  amount: Joi.number()
+    .min(0)
+    .max(Number(process.env.WITHDRAW_MAX_TRANSACTION))
+    .multiple(Number(process.env.WITHDRAW_DIVISIBLE))
+    .required()
+    .messages({
+      'number.min': `Can only withdraw a value no less than \${#limit}.`,
+      'number.max': `Can withdraw no more than \${#limit} in a single transaction.`,
+      'number.multiple': `Can only withdraw an amount that can be dispensed in \${#multiple} bills.`,
+    })
 });
 
 router.put("/:accountID/withdraw", async (request: Request, response: Response) => {
-  const {error} = transactionSchema.validate(request.body);
+  const {error} = withdrawSchema.validate(request.body);
 
   if (error) {
-    return response.status(400).send(error.details[0].message);
+    return response.status(400).send({ error: error.details[0].message });
   }
 
   try {
@@ -25,11 +34,22 @@ router.put("/:accountID/withdraw", async (request: Request, response: Response) 
   }
 });
 
+const depositSchema: Schema = Joi.object({
+  amount: Joi.number()
+    .min(0)
+    .max(Number(process.env.DEPOSIT_MAX_TRANSACTION))
+    .required()
+    .messages({
+      'number.min': `Cannot deposit a value less than \${#limit}.`,
+      'number.max': `Cannot deposit more than \${#limit} in a single transaction.`,
+    })
+});
+
 router.put("/:accountID/deposit", async (request: Request, response: Response) => {
-  const {error} = transactionSchema.validate(request.body);
+  const {error} = depositSchema.validate(request.body);
 
   if (error) {
-    return response.status(400).send(error.details[0].message);
+    return response.status(400).send({ error: error.details[0].message });
   }
 
   try {

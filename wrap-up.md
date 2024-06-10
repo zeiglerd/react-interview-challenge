@@ -22,6 +22,7 @@ n/a
 - Shared library for TS and other shared functionality.
 - Add a `README.md` to `./api` and `./ui`
 - Add functional and unit tests.
+- DB pool.
 
 ### If you have any other comments or info you'd like the reviewers to know, please add them below.
 - I could not run the `docker run build` command on my Windows machine; however, the `docker compose up -d` command did spin up the Docker stack. I did reach out to Michael Hartung who confirmed the same issue on their side as well.

@@ -77,7 +77,7 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
 
     const withdrawnTodayTotal = getWithdrawnTodayTotal(account)
     if (withdrawnTodayTotal + withdrawAmount > Number(process.env.REACT_APP_WITHDRAW_MAX_DAILY)) {
-      errors.push(`Can withdraw no more than $${process.env.REACT_APP_WITHDRAW_MAX_DAILY} in a single day. You have withdrawn ${withdrawnTodayTotal}.`);
+      errors.push(`Can withdraw no more than $${process.env.REACT_APP_WITHDRAW_MAX_DAILY} in a single day. You have withdrawn $${withdrawnTodayTotal}.`);
     }
 
     if (withdrawAmount % Number(process.env.REACT_APP_WITHDRAW_DIVISIBLE) !== 0) {
@@ -85,10 +85,9 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
     }
 
     if (account.type === 'credit') {
-      let availableCredit = account.creditLimit;
-      availableCredit += account.amount;
+      const availableCredit = account.creditLimit + account.amount;
       if (withdrawAmount > availableCredit) {
-        errors.push(`Cannot withdraw more than your credit limit. Your credit limit is ${account.creditLimit}.`);
+        errors.push(`Cannot withdraw more than your credit limit. Your credit limit is $${account.creditLimit}.`);
       }
     } else if (withdrawAmount > account.amount) {
       errors.push('Cannot withdraw more than you have in your account.');

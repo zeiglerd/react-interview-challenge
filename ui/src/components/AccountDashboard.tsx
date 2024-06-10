@@ -135,7 +135,7 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
           <Card className="deposit-card">
             <CardContent>
               <h3>Deposit</h3>
-              { depositErrors && <List>
+              { depositErrors && <List className='deposit-errors'>
                 {depositErrors.map((error, i) => (
                   <ListItem key={i}>
                     <ListItemText primary={error} />
@@ -143,6 +143,7 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
                 ))}
               </List> }
               <TextField
+                id="deposit-amount"
                 label="Deposit Amount"
                 variant="outlined"
                 type="number"
@@ -153,6 +154,7 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
                 onChange={(e) => setDepositAmount(+e.target.value)}
               />
               <Button
+                id="deposit-btn"
                 variant="contained"
                 sx={{
                   display: 'flex',
@@ -169,7 +171,7 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
           <Card className="withdraw-card">
             <CardContent>
               <h3>Withdraw</h3>
-              { withdrawErrors && <List>
+              { withdrawErrors && <List className='withdraw-errors'>
                 {withdrawErrors.map((error, i) => (
                   <ListItem key={i}>
                     <ListItemText primary={error} />
@@ -177,6 +179,7 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
                 ))}
               </List> }
               <TextField
+                id="withdraw-amount"
                 label="Withdraw Amount"
                 variant="outlined"
                 type="number"
@@ -187,6 +190,7 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
                 onChange={(e) => setWithdrawAmount(+e.target.value)}
               />
               <Button
+                id="withdraw-btn"
                 variant="contained"
                 sx={{
                   display: 'flex',

@@ -40,7 +40,7 @@ export const withdrawal = async (accountID: string, amount: number) => {
     const withdrawnToday = transactionsValidate.rows.reduce((accumulator: number, previousValue) =>
       previousValue ? accumulator + previousValue.amount : 0, 0);
     if (withdrawnToday > Number(process.env.WITHDRAW_MAX_DAILY)) {
-      throw new Error(`Can withdraw no more than $${process.env.WITHDRAW_MAX_DAILY} in a single day. You have withdrawn $${withdrawnToday}.`);
+      throw new Error(`Can withdraw no more than $${process.env.WITHDRAW_MAX_DAILY} in a single day. You have withdrawn $${withdrawnToday - amount}.`);
     }
     account.withdrawnTodayTotal = withdrawnToday;
 

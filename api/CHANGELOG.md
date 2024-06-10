@@ -16,10 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `WITHDRAW_DIVISIBLE`
 - Added `transactionHandler.tQuery` method.
 - Added `transactions` table.
-- Added conditions for deposit:
+- Added rules for deposit:
     - A customer cannot deposit more than $1000 in a single transaction.
     - If this is a credit account, the customer cannot deposit more in their account than is needed to 0 out the account.
-- Added conditions for withdraw:
+- Added rules for withdraw:
     - A customer can withdraw no more than $200 in a single transaction.
     - A customer can withdraw no more than $400 in a single day.
     - A customer can withdraw any amount that can be dispensed in $5 bills.

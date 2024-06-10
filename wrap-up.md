@@ -21,7 +21,7 @@ n/a
 ### If you were to continue building this out, what would you like to add next?
 - Shared library for TS and other shared functionality.
 - Add a `README.md` to `./api` and `./ui`
-- Add functional and unit tests.
+- Add ~~functional~~ (this is started now) and unit tests.
 - DB pool.
 
 ### If you have any other comments or info you'd like the reviewers to know, please add them below.

@@ -21,14 +21,16 @@ VALUES
     (5, 'Bills Savings', 50000, 'savings'),
     (7, 'Nancy Checking', 70000, 'checking'),
     (8, 'Nancy Savings', 80000, 'savings'),
-    (10, 'Steves Checking', 200, 'checking');
+    (10, 'Steves Checking', 200, 'checking'),
+    (11, 'Rudys Savings', 100, 'savings');
 
 INSERT INTO accounts
     (account_number, name, amount, type, credit_limit)
 VALUES
     (3, 'Jills Credit', -3000, 'credit', 10000),
     (6, 'Bills Credit', -60000, 'credit', 60000),
-    (9, 'Nancy Credit', -90000, 'credit', 100000);
+    (9, 'Nancy Credit', -90000, 'credit', 100000),
+    (12, 'Hanks Credit', -400, 'credit', 1000);
 
 -- CREATE TRANSACTIONS TABLE
 DROP TABLE IF EXISTS transactions;

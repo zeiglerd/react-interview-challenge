@@ -11,8 +11,8 @@ const withdrawSchema: Schema = Joi.object({
     .multiple(Number(process.env.WITHDRAW_DIVISIBLE))
     .required()
     .messages({
-      'number.min': `Cannot withdraw a value less than \${#limit}.`,
-      'number.max': `Cannot withdraw more than \${#limit} in a single transaction.`,
+      'number.min': `Can only withdraw a value no less than \${#limit}.`,
+      'number.max': `Can withdraw no more than \${#limit} in a single transaction.`,
       'number.multiple': `Can only withdraw an amount that can be dispensed in \${#multiple} bills.`,
     })
 });

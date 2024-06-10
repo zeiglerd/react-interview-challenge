@@ -29,12 +29,13 @@ export const withdrawal = async (accountID: string, amount: number) => {
   if (withdrawnTodayTotal + amount > Number(process.env.WITHDRAW_MAX_DAILY)) {
     throw new Error(`Can withdraw no more than $${process.env.WITHDRAW_MAX_DAILY} in a single day. You have withdrawn ${withdrawnTodayTotal}.`);
   }
+  account.withdrawnTodayTotal = withdrawnTodayTotal + amount;
 
   if (account.type === 'credit') {
     let availableCredit = account.credit_limit;
     availableCredit += account.amount;
     if (amount > availableCredit) {
-      throw new Error('Cannot withdraw more than your credit limit.');
+      throw new Error(`Cannot withdraw more than your credit limit. Your credit limit is ${account.credit_limit}.`);
     }
   } else if (amount > account.amount) {
     throw new Error('Cannot withdraw more than you have in your account.');
@@ -49,23 +50,15 @@ export const withdrawal = async (accountID: string, amount: number) => {
       [account.amount, accountID]
     );
 
-    const date = (new Date()).toISOString()
-      .split('T')
-      .join(' ')
-      .replace(/Z$/, '');
-
-    account.lastWithdraw = { amount, date };
-
     await client.query(`
       INSERT INTO transactions (
         account_number,
         amount,
-        type,
-        date
+        type
       ) VALUES (
-        $1, $2, 'withdraw', $3
+        $1, $2, 'withdraw'
       )`,
-      [accountID, amount, date]
+      [accountID, amount]
     );
   });
 

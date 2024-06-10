@@ -8,25 +8,13 @@ type AccountDashboardProps = {
   signOut: () => Promise<void>;
 }
 
-const updatePastWithdraws = (account: account) => {
-  const pastWithdraws = JSON.parse(localStorage.getItem('pastWithdraws') ?? '{}');
-  pastWithdraws[account.accountNumber] = pastWithdraws[account.accountNumber] ?? [];
-  pastWithdraws[account.accountNumber].push({
-    amount: account.lastWithdraw?.amount,
-    date: account.lastWithdraw?.date
-  });
-  localStorage.setItem('pastWithdraws', JSON.stringify(pastWithdraws));
+const updateWithdrawnTodayTotal = (account: account) => {
+  const withdrawnTodayTotal = JSON.parse(localStorage.getItem('withdrawnTodayTotal') ?? '{}');
+  withdrawnTodayTotal[account.accountNumber] = account.withdrawnTodayTotal;
+  localStorage.setItem('withdrawnTodayTotal', JSON.stringify(withdrawnTodayTotal));
 };
 
-const getPastWithdraws = (account: account) => JSON.parse(localStorage.getItem('pastWithdraws') ?? '{}')[account.accountNumber] ?? [];
-
-const getWithdrawnTodayTotal = (account: account) => {
-  const todaysWithdraws = getPastWithdraws(account).filter((pastWithdraw: typeof account.lastWithdraw) => {
-    return pastWithdraw && (new Date().getTime() - new Date(pastWithdraw.date).getTime()) < (24 * 60 * 60 * 1000);
-  });
-  return todaysWithdraws.reduce((accumulator: number, lastWithdraw: typeof account.lastWithdraw) =>
-    lastWithdraw ? accumulator + lastWithdraw.amount : 0, 0);
-};
+const getWithdrawnTodayTotal = (account: account) => JSON.parse(localStorage.getItem('withdrawnTodayTotal') ?? '{}')[account.accountNumber] ?? 0;
 
 export const AccountDashboard = (props: AccountDashboardProps) => {
   const [depositAmount, setDepositAmount] = useState(0);
@@ -100,7 +88,7 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
       let availableCredit = account.creditLimit;
       availableCredit += account.amount;
       if (withdrawAmount > availableCredit) {
-        errors.push('Cannot withdraw more than your credit limit.');
+        errors.push(`Cannot withdraw more than your credit limit. Your credit limit is ${account.creditLimit}.`);
       }
     } else if (withdrawAmount > account.amount) {
       errors.push('Cannot withdraw more than you have in your account.');
@@ -128,12 +116,12 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
       amount: data.amount,
       type: data.type,
       creditLimit: data.credit_limit,
-      lastWithdraw: data.lastWithdraw
+      withdrawnTodayTotal: data.withdrawnTodayTotal
     });
   }
 
   useEffect(() => {
-    updatePastWithdraws(account);
+    updateWithdrawnTodayTotal(account);
   }, [account]);
 
   return (

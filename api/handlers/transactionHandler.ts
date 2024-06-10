@@ -1,35 +1,37 @@
 import { query, tQuery } from "../utils/db";
+import { account } from "../Types/Account";
 import { getAccount } from "./accountHandler";
 
-export const withdrawal = async (accountID: string, amount: number) => {
-  const account = await getAccount(accountID);
-  
-  if (amount > Number(process.env.WITHDRAW_MAX_TRANSACTION)) {
-    throw new Error(`Can withdraw no more than $${process.env.WITHDRAW_MAX_TRANSACTION} in a single transaction.`);
-  }
+export const getWithdrawnTodayTotal = async (account: account) => {
+  let withdrawnToday = 0;
   const res = await query(`
-    SELECT amount, 
-           date 
+    SELECT amount,
+           date
     FROM transactions
     WHERE account_number = $1
+      AND type = 'withdraw'
       AND date >= NOW() - INTERVAL '24 HOUR'
-    `, 
-    [accountID]
+    `,
+    [account.account_number]
   );
   if (res && res.rows && res.rows.length) {
-    let withdrawnToday = 0
     res.rows.forEach((field) => {
       withdrawnToday += field.amount;
     });
-    if (withdrawnToday + amount > Number(process.env.WITHDRAW_MAX_DAILY)) {
-      throw new Error(`Can withdraw no more than $${process.env.WITHDRAW_MAX_DAILY} in a single day.`);
-    }
   }
-  if (amount % Number(process.env.WITHDRAW_DIVISIBLE) !== 0) {
-    throw new Error(`Can only withdraw an amount that can be dispensed in $${process.env.WITHDRAW_DIVISIBLE} bills.`);
+  return withdrawnToday;
+};
+
+export const withdrawal = async (accountID: string, amount: number) => {
+  const account = await getAccount(accountID);
+
+  const withdrawnTodayTotal = await getWithdrawnTodayTotal(account);
+  if (withdrawnTodayTotal + amount > Number(process.env.WITHDRAW_MAX_DAILY)) {
+    throw new Error(`Can withdraw no more than $${process.env.WITHDRAW_MAX_DAILY} in a single day. You have withdrawn ${withdrawnTodayTotal}.`);
   }
+
   if (account.type === 'credit') {
-    let availableCredit = account.creditLimit;
+    let availableCredit = account.credit_limit;
     availableCredit += account.amount;
     if (amount > availableCredit) {
       throw new Error('Cannot withdraw more than your credit limit.');
@@ -42,7 +44,7 @@ export const withdrawal = async (accountID: string, amount: number) => {
   await tQuery(async (client) => {
     await client.query(`
       UPDATE accounts
-      SET amount = $1 
+      SET amount = $1
       WHERE account_number = $2`,
       [account.amount, accountID]
     );
@@ -53,7 +55,7 @@ export const withdrawal = async (accountID: string, amount: number) => {
       .replace(/Z$/, '');
 
     account.lastWithdraw = { amount, date };
-    
+
     await client.query(`
       INSERT INTO transactions (
         account_number,
@@ -73,9 +75,6 @@ export const withdrawal = async (accountID: string, amount: number) => {
 export const deposit = async (accountID: string, amount: number) => {
   const account = await getAccount(accountID);
 
-  if (amount > Number(process.env.DEPOSIT_MAX_TRANSACTION)) {
-    throw new Error(`Cannot deposit more than $${process.env.DEPOSIT_MAX_TRANSACTION} in a single transaction.`);
-  }
   if (account.type === 'credit') {
     const newAmount = amount + account.amount;
     if (newAmount > 0) {
@@ -87,11 +86,11 @@ export const deposit = async (accountID: string, amount: number) => {
   await tQuery(async (client) => {
     await client.query(`
       UPDATE accounts
-      SET amount = $1 
+      SET amount = $1
       WHERE account_number = $2`,
       [account.amount, accountID]
     );
-    
+
     await client.query(`
       INSERT INTO transactions (
         account_number,

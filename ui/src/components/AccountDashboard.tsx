@@ -11,7 +11,7 @@ type AccountDashboardProps = {
 const updatePastWithdraws = (account: account) => {
   const pastWithdraws = JSON.parse(localStorage.getItem('pastWithdraws') ?? '{}');
   pastWithdraws[account.accountNumber] = pastWithdraws[account.accountNumber] ?? [];
-  pastWithdraws[account.accountNumber].push({ 
+  pastWithdraws[account.accountNumber].push({
     amount: account.lastWithdraw?.amount,
     date: account.lastWithdraw?.date
   });
@@ -22,10 +22,9 @@ const getPastWithdraws = (account: account) => JSON.parse(localStorage.getItem('
 
 const getWithdrawnTodayTotal = (account: account) => {
   const todaysWithdraws = getPastWithdraws(account).filter((pastWithdraw: typeof account.lastWithdraw) => {
-    const transactionDate = pastWithdraw && new Date(pastWithdraw.date);
-    return transactionDate && (new Date().getTime() - transactionDate.getTime()) < (24 * 60 * 60 * 1000);
+    return pastWithdraw && (new Date().getTime() - new Date(pastWithdraw.date).getTime()) < (24 * 60 * 60 * 1000);
   });
-  return todaysWithdraws.reduce((accumulator: number, lastWithdraw: typeof account.lastWithdraw) => 
+  return todaysWithdraws.reduce((accumulator: number, lastWithdraw: typeof account.lastWithdraw) =>
     lastWithdraw ? accumulator + lastWithdraw.amount : 0, 0);
 };
 
@@ -34,7 +33,7 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
   const [depositErrors, setDepositErrors] = useState<string[]>([]);
   const [withdrawAmount, setWithdrawAmount] = useState(0);
   const [withdrawErrors, setWithdrawErrors] = useState<string[]>([]);
-  const [account, setAccount] = useState(props.account); 
+  const [account, setAccount] = useState(props.account);
 
   const {signOut} = props;
 
@@ -42,15 +41,18 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
     setDepositErrors([]);
     setWithdrawErrors([]);
     const errors = []
+
     if (depositAmount > Number(process.env.REACT_APP_DEPOSIT_MAX_TRANSACTION)) {
       errors.push(`Cannot deposit more than $${process.env.REACT_APP_DEPOSIT_MAX_TRANSACTION} in a single transaction.`);
     }
+
     if (account.type === 'credit') {
       const newAmount = depositAmount + account.amount;
       if (newAmount > 0) {
         errors.push('Cannot deposit more in your account than is needed to reach a zero balance.');
       }
     }
+
     if (errors.length) {
       return setDepositErrors(errors);
     }
@@ -80,16 +82,20 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
     setDepositErrors([]);
     setWithdrawErrors([]);
     const errors = []
+
     if (withdrawAmount > Number(process.env.REACT_APP_WITHDRAW_MAX_TRANSACTION)) {
       errors.push(`Can withdraw no more than $${process.env.REACT_APP_WITHDRAW_MAX_TRANSACTION} in a single transaction.`);
     }
+
     const withdrawnTodayTotal = getWithdrawnTodayTotal(account)
-    if (withdrawnTodayTotal > Number(process.env.REACT_APP_WITHDRAW_MAX_DAILY)) {
-      errors.push(`Can withdraw no more than $${process.env.REACT_APP_WITHDRAW_MAX_DAILY} in a single day.`);
+    if (withdrawnTodayTotal + withdrawAmount > Number(process.env.REACT_APP_WITHDRAW_MAX_DAILY)) {
+      errors.push(`Can withdraw no more than $${process.env.REACT_APP_WITHDRAW_MAX_DAILY} in a single day. You have withdrawn ${withdrawnTodayTotal}.`);
     }
+
     if (withdrawAmount % Number(process.env.REACT_APP_WITHDRAW_DIVISIBLE) !== 0) {
       errors.push(`Can only withdraw an amount that can be dispensed in $${process.env.REACT_APP_WITHDRAW_DIVISIBLE} bills.`);
     }
+
     if (account.type === 'credit') {
       let availableCredit = account.creditLimit;
       availableCredit += account.amount;
@@ -99,10 +105,11 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
     } else if (withdrawAmount > account.amount) {
       errors.push('Cannot withdraw more than you have in your account.');
     }
+
     if (errors.length) {
       return setWithdrawErrors(errors);
     }
-    
+
     const requestOptions = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -110,7 +117,7 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
     }
     const response = await fetch(`http://localhost:3000/transactions/${account.accountNumber}/withdraw`, requestOptions);
     const data = await response.json();
-    
+
     if (data.error) {
       return setWithdrawErrors([data.error]);
     }
@@ -142,15 +149,15 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
             <CardContent>
               <h3>Deposit</h3>
               { depositErrors && <List>
-                {depositErrors.map((error) => (
-                  <ListItem>
+                {depositErrors.map((error, i) => (
+                  <ListItem key={i}>
                     <ListItemText primary={error} />
                   </ListItem>
                 ))}
               </List> }
-              <TextField 
-                label="Deposit Amount" 
-                variant="outlined" 
+              <TextField
+                label="Deposit Amount"
+                variant="outlined"
                 type="number"
                 sx={{
                   display: 'flex',
@@ -158,11 +165,11 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
                 }}
                 onChange={(e) => setDepositAmount(+e.target.value)}
               />
-              <Button 
-                variant="contained" 
+              <Button
+                variant="contained"
                 sx={{
-                  display: 'flex', 
-                  margin: 'auto', 
+                  display: 'flex',
+                  margin: 'auto',
                   marginTop: 2}}
                 onClick={depositFunds}
               >
@@ -182,21 +189,21 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
                   </ListItem>
                 ))}
               </List> }
-              <TextField 
-                label="Withdraw Amount" 
-                variant="outlined" 
-                type="number" 
+              <TextField
+                label="Withdraw Amount"
+                variant="outlined"
+                type="number"
                 sx={{
                   display: 'flex',
                   margin: 'auto',
                 }}
                 onChange={(e) => setWithdrawAmount(+e.target.value)}
               />
-              <Button 
-                variant="contained" 
+              <Button
+                variant="contained"
                 sx={{
-                  display: 'flex', 
-                  margin: 'auto', 
+                  display: 'flex',
+                  margin: 'auto',
                   marginTop: 2
                 }}
                 onClick={withdrawFunds}
@@ -208,6 +215,6 @@ export const AccountDashboard = (props: AccountDashboardProps) => {
         </Grid>
       </Grid>
     </Paper>
-    
+
   )
 }
